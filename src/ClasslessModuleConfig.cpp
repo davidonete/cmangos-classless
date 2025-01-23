@@ -1,17 +1,17 @@
-#include "BalancingModuleConfig.h"
+#include "ClasslessModuleConfig.h"
 
 namespace cmangos_module
 {
-    BalancingModuleConfig::BalancingModuleConfig()
-    : ModuleConfig("balancing.conf")
+    ClasslessModuleConfig::ClasslessModuleConfig()
+    : ModuleConfig("classless.conf")
     , enabled(false)
     {
 
     }
 
-    bool BalancingModuleConfig::OnLoad()
+    bool ClasslessModuleConfig::OnLoad()
     {
-        enabled = config.GetBoolDefault("Balancing.Enable", false);
+        enabled = config.GetBoolDefault("Classless.Enable", false);
         return true;
     }
 }
