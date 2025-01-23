@@ -9,7 +9,7 @@ namespace cmangos_module
     class ClasslessModule : public Module
     {
     public:
-        BalancingModule();
+        ClasslessModule();
         const ClasslessModuleConfig* GetConfig() const override;
     };
 }
