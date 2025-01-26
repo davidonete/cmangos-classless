@@ -47,7 +47,6 @@ namespace cmangos_module
         const ClasslessPlayerMgr* GetClasslessPlayerMgr(const Player* player) const;
 
         bool IsAddonEnabled(const Player* player) const;
-        void EnableAddon(Player* player);
 
         void SendAddonMessage(const Player* player, const char* message) const;
         void PSendAddonMessage(const Player* player, const char* format, ...) const;

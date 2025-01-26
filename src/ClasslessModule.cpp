@@ -248,9 +248,20 @@ namespace cmangos_module
             Player* player = session->GetPlayer();
             if (player)
             {
-                if (!IsAddonEnabled(player))
+                bool addonEnabled = false;
+                if (ClasslessPlayerMgr* playerMgr = GetClasslessPlayerMgr(player))
                 {
-                    EnableAddon(player);
+                    addonEnabled = playerMgr->IsAddonEnabled();
+                    if (!addonEnabled)
+                    {
+                        playerMgr->EnableAddon();
+                        addonEnabled = true;
+                    }
+                }
+
+                if (addonEnabled)
+                {
+                    SendAddonMessage(player, "AddonEnabled");
                 }
 
                 return true;
@@ -327,16 +338,5 @@ namespace cmangos_module
         }
 
         return false;
-    }
-
-    void ClasslessModule::EnableAddon(Player* player)
-    {
-        if (player)
-        {
-            if (ClasslessPlayerMgr* playerMgr = GetClasslessPlayerMgr(player))
-            {
-                return playerMgr->EnableAddon();
-            }
-        }
     }
 }
