@@ -38,6 +38,9 @@ namespace cmangos_module
         void OnGetPlayerClassLevelInfo(Player* player, PlayerClassLevelInfo& info) override;
         void OnRegenerate(Player* player, uint8 power, uint32 diff, float& addedValue) override;
 
+        // Unit Hooks
+        void OnSetPower(Unit* unit, uint8 power, uint32& value) override;
+
         std::vector<ModuleChatCommand>* GetCommandTable() override;
         const char* GetChatCommandPrefix() const override { return "classless"; }
         bool HandleEnableAddon(WorldSession* session, const std::string& args);

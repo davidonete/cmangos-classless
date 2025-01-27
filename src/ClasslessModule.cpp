@@ -156,32 +156,33 @@ namespace cmangos_module
                     addedValue = modManaRegen * ManaIncreaseRate * uint32(float(diff) / 1000);
                 }
             }
+        }
+    }
+
+    void ClasslessModule::OnSetPower(Unit* unit, uint8 power, uint32& value)
+    {
+        if (GetConfig()->enabled && unit && unit->GetTypeId() == TYPEID_PLAYER)
+        {
+            Player* player = static_cast<Player*>(unit);
+
+#ifdef ENABLE_PLAYERBOTS
+            // Don't allow bot characters
+            if (!player->isRealPlayer())
+                return false;
+#endif
 
             // Send updated power to client
-            if (power == POWER_MANA || power == POWER_RAGE || power == POWER_ENERGY)
+            const uint8 cls = player->getClass();
+            const bool rageClass = cls == CLASS_WARRIOR;
+            const bool energyClass = cls == CLASS_ROGUE;
+            const bool manaClass = !rageClass && !energyClass;
+            if ((!manaClass && power == POWER_MANA) || (!rageClass && power == POWER_RAGE) || (!energyClass && power == POWER_ENERGY))
             {
-                uint32 curValue = player->GetPower((Powers)(power));
+                uint32 curValue = value;
                 uint32 maxValue = player->GetMaxPower((Powers)(power));
 
-                if (power != POWER_RAGE)
+                if (power == POWER_RAGE)
                 {
-                    curValue += uint32(addedValue);
-                    if (curValue > maxValue)
-                    {
-                        curValue = maxValue;
-                    }
-                }
-                else
-                {
-                    if (curValue <= uint32(addedValue))
-                    {
-                        curValue = 0;
-                    }
-                    else
-                    {
-                        curValue -= uint32(addedValue);
-                    }
-
                     curValue /= 10;
                     maxValue /= 10;
                 }
@@ -243,11 +244,17 @@ namespace cmangos_module
 
     bool ClasslessModule::HandleEnableAddon(WorldSession* session, const std::string& args)
     {
-        if (GetConfig()->enabled)
+        if (GetConfig()->enabled && session)
         {
             Player* player = session->GetPlayer();
             if (player)
             {
+#ifdef ENABLE_PLAYERBOTS
+                // Don't allow bot characters
+                if (!player->isRealPlayer())
+                    return false;
+#endif
+
                 bool addonEnabled = false;
                 if (ClasslessPlayerMgr* playerMgr = GetClasslessPlayerMgr(player))
                 {
@@ -262,6 +269,16 @@ namespace cmangos_module
                 if (addonEnabled)
                 {
                     SendAddonMessage(player, "AddonEnabled");
+
+                    // Send the initial power values to initialize the client power bars
+                    uint32 powerValue = player->GetPower(POWER_MANA);
+                    OnSetPower(player, POWER_MANA, powerValue);
+
+                    powerValue = player->GetPower(POWER_RAGE);
+                    OnSetPower(player, POWER_RAGE, powerValue);
+
+                    powerValue = player->GetPower(POWER_ENERGY);
+                    OnSetPower(player, POWER_ENERGY, powerValue);
                 }
 
                 return true;

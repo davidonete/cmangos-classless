@@ -72,43 +72,43 @@ function ClasslessPowerBars:HandleInitialize()
 		local offsetPosition = { -11, 14 }
 		local barCount = 0;
 		
-		for i = 1, 4 do
-			local powerType = i - 1;
+		for barID = 1, 4 do
+			local powerType = barID - 1;
 			if (self:IsManaPower(powerType) and not hasDefaultManaBar) or (self:IsRagePower(powerType) and not hasDefaultRageBar) or (self:IsEnergyPower(powerType) and not hasDefaultEnergyBar) then	
-				self.powerBars[i] = CreateFrame("StatusBar", "ClasslessPowerBars", PlayerFrame, "TextStatusBar")
-				self.powerBars[i]:SetWidth(baseSize[1] - (offsetSize[1] * barCount))
-				self.powerBars[i]:SetHeight(baseSize[2] - (offsetSize[2] * barCount))
-				self.powerBars[i]:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
-				self.powerBars[i]:SetStatusBarColor(ManaBarColor[powerType].r, ManaBarColor[powerType].g, ManaBarColor[powerType].b)
+				self.powerBars[barID] = CreateFrame("StatusBar", "ClasslessPowerBars", PlayerFrame, "TextStatusBar")
+				self.powerBars[barID]:SetWidth(baseSize[1] - (offsetSize[1] * barCount))
+				self.powerBars[barID]:SetHeight(baseSize[2] - (offsetSize[2] * barCount))
+				self.powerBars[barID]:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+				self.powerBars[barID]:SetStatusBarColor(ManaBarColor[powerType].r, ManaBarColor[powerType].g, ManaBarColor[powerType].b)
 
-				local bg = self.powerBars[i]:CreateTexture("$parentBackground", "BACKGROUND")
-				bg:SetAllPoints(self.powerBars[i])
+				local bg = self.powerBars[barID]:CreateTexture("$parentBackground", "BACKGROUND")
+				bg:SetAllPoints(self.powerBars[barID])
 				bg:SetTexture("Interface\\TargetingFrame\\UI-StatusBar")
 				bg:SetVertexColor(0, 0, 0, 0.5)
-				self.powerBars[i].bg = bg
+				self.powerBars[barID].bg = bg
 
-				local bd = self.powerBars[i]:CreateTexture("$parentBorder", "OVERLAY")
+				local bd = self.powerBars[barID]:CreateTexture("$parentBorder", "OVERLAY")
 				bd:SetWidth(baseSizeBD[1] - (offsetSizeBD[1] * barCount))
 				bd:SetHeight(baseSizeBD[2] - (offsetSizeBD[2] * barCount))
 				bd:SetTexture("Interface\\CharacterFrame\\UI-CharacterFrame-GroupIndicator")
-				self.powerBars[i].bd = bd
+				self.powerBars[barID].bd = bd
 
-				local text = self.powerBars[i]:CreateFontString("$parentText", "OVERLAY", "TextStatusBarText")
+				local text = self.powerBars[barID]:CreateFontString("$parentText", "OVERLAY", "TextStatusBarText")
 				text:SetPoint("CENTER", 0, 0)
-				SetTextStatusBarText(self.powerBars[i], text)
-				self.powerBars[i].textLockable = 1
-				self.powerBars[i].text = text
+				SetTextStatusBarText(self.powerBars[barID], text)
+				self.powerBars[barID].textLockable = 1
+				self.powerBars[barID].text = text
 				
-				self.powerBars[i]:SetMinMaxValues(0, 100)
-				self.powerBars[i]:SetValue(100)
+				self.powerBars[barID]:SetMinMaxValues(0, 100)
+				self.powerBars[barID]:SetValue(100)
 				
-				self.powerBars[i]:SetScript("OnMouseUp", function(button)
+				self.powerBars[barID]:SetScript("OnMouseUp", function(button)
 					this:GetParent():Click(button)
 				end)
 				
-				self.powerBars[i]:SetPoint("BOTTOMLEFT", basePosition[1] - (offsetPosition[1] * barCount), basePosition[2] - (offsetPosition[2] * barCount))
-				self.powerBars[i].bd:SetPoint("TOPLEFT", -10, 0)
-				self.powerBars[i].bd:SetTexCoord(0.0234375, 0.6875, 1.0, 0.0)
+				self.powerBars[barID]:SetPoint("BOTTOMLEFT", basePosition[1] - (offsetPosition[1] * barCount), basePosition[2] - (offsetPosition[2] * barCount))
+				self.powerBars[barID].bd:SetPoint("TOPLEFT", -10, 0)
+				self.powerBars[barID].bd:SetTexCoord(0.0234375, 0.6875, 1.0, 0.0)
 			
 				barCount = barCount + 1;
 			end
@@ -118,7 +118,12 @@ end
 
 function ClasslessPowerBars:HandlePowerUpdate(powerType, current, total)
 	if self.initialized then
-		--self:SendDebugMessage("HandlePowerUpdate Power: " .. powerType .. " Current: " .. current .. " Total: " .. total)
+		self:SendDebugMessage("HandlePowerUpdate Power: " .. powerType .. " Current: " .. current .. " Total: " .. total)
+		local barID = powerType + 1
+		if self.powerBars[barID] then
+			self.powerBars[barID]:SetMinMaxValues(0, total)
+			self.powerBars[barID]:SetValue(current)
+		end
 	end
 end
 
